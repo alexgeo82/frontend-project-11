@@ -1,13 +1,13 @@
 import * as yup from 'yup';
 
-export default (url, feeds) => {
+export default (url, feeds, i18n) => {
     yup.setLocale({
         string: {
-            url: 'Ссылка должна быть валидным URL',
+            url: i18n.t('form.errors.notValidUrl'),
         },
         mixed: {
-            required: 'Не должно быть пустым',
-            notOneOf: 'RSS уже существует',
+            required: i18n.t('form.errors.required'),
+            notOneOf: i18n.t('form.errors.notUniqueUrl'),
         },
     })
 

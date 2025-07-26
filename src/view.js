@@ -1,79 +1,104 @@
 import onChange from 'on-change'
-import validateUrl from './validator.js'
-import axios from 'axios'
-import i18next from 'i18next'
-import ru from './locales/ru.js'
 
-export default () => {
-    const initialState = {
-        form: {
-            state: 'filling',
-            error: null,
-            valid: true,
-        },
-        feeds: [],
-        posts: [],
+const renderError = (error, elements, i18n) => {
+    if (error) {
+        elements.input.classList.add('is-invalid')
+        elements.feedback.classList.add('text-danger')
+        elements.feedback.textContent = i18n.t(error)
     }
+}
 
-    const i18n = i18next.createInstance();
-    i18n.init({
-        lng: 'ru',
-        debug: true,
-        resources: {
-            ru,
-        },
-    })
+const createUlElement = (element, title, i18n, id) => {
+    const div = document.createElement('div')
+    div.className = 'card border-0'
+    element.append(div)
 
-    const form = document.querySelector('form')
-    const input = document.getElementById('url-input')
-    const submitButton = document.querySelector('button[type="submit"]')
-    const feedback = document.querySelector('.feedback')
+    const divCardBody = document.createElement('div')
+    divCardBody.className = 'card-body'
+    div.append(divCardBody)
 
-    const render = (path, current) => {
-        switch (path) {
-            case 'form.error':
-                input.classList.add('is-invalid')
-                feedback.classList.add('text-danger')
-                if (current === 'notValidRss') {
-                    feedback.textContent = i18n.t('form.errors.notValidRss')
-                } else {
-                    feedback.textContent = current
-                }
-                break
-            case 'feeds':
-                form.reset()
-                input.focus()
-                feedback.classList.remove('text-danger')
-                feedback.classList.add('text-success')
-                input.classList.remove('is-invalid')
-                feedback.textContent = i18n.t('form.success')
-                break
-        }
-    }
+    const h2 = document.createElement('h2')
+    h2.className = 'card-title h4'
+    h2.textContent = i18n.t(title)
+    divCardBody.appendChild(h2)
 
-    const watchedState = onChange(initialState, (path, current, previous) => {
-        render(path, current)
-    })
+    const ul = document.createElement('ul')
+    ul.className = 'list-group border-0 rounded-0'
+    ul.setAttribute('id', id)
+    div.append(ul)
+}
 
-    submitButton.addEventListener('click', async (e) => {
-        e.preventDefault()
-        const url = input.value
-        try {
-            await validateUrl(url, watchedState.feeds, i18n)
-            //watchedState.form.state = 'processing'
-            await axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
-                .then(response => {
-                    if (response.data.status.error) {
-                        watchedState.form.error = 'notValidRss'
-                        return
-                    }
-                    watchedState.feeds.push(url)
-                })
-                .catch(error => {
-                    console.error(error.response)
-                })
-        } catch (error) {
-            watchedState.form.error = error.message
-        }
+const renderFeeds = (state, elements, i18n) => {
+    elements.form.reset()
+    elements.input.focus()
+    elements.feeds.innerHTML = ''
+    elements.feedback.classList.remove('text-danger')
+    elements.feedback.classList.add('text-success')
+    elements.input.classList.remove('is-invalid')
+    elements.feedback.textContent = i18n.t('form.success')
+
+    createUlElement(elements.feeds, 'feeds.title', i18n, 'feeds')
+    const ul = document.getElementById('feeds')
+
+    state.feeds.forEach((feed) => {
+        const li = document.createElement('li')
+        li.className = 'list-group-item border-0 border-end-0'
+
+        const h3 = document.createElement('h3')
+        h3.className = 'h6 m-0'
+        h3.textContent = feed.feed.title
+        li.append(h3)
+
+        const p = document.createElement('p')
+        p.className = 'm-0 small text-black-50'
+        p.textContent = feed.feed.description
+        li.append(p)
+        ul.append(li)
     })
 }
+
+const renderPosts = (state, elements, i18n) => {
+    elements.posts.innerHTML = ''
+    createUlElement(elements.posts, 'posts.title', i18n, 'posts')
+    const ul = document.getElementById('posts')
+
+    state.posts.forEach((post) => {
+        const li = document.createElement('li')
+        li.className = 'list-group-item d-flex justify-content-between align-items-start border-0 border-end-0'
+
+        const a = document.createElement('a')
+        a.setAttribute('href', post.post.link)
+        a.className = 'fw-bold'
+        a.dataset.id = post.post.id
+        a.setAttribute('target', '_blank')
+        a.setAttribute('rel', 'noopener noreferrer')
+        a.textContent = post.post.title
+        li.append(a)
+
+        const button = document.createElement('button')
+        button.setAttribute('type', 'button')
+        button.className = 'btn btn-outline-primary btn-sm'
+        button.dataset.id = post.post.id
+        button.dataset.bsToggle = 'modal'
+        button.dataset.bsTarget = '#modal'
+        button.textContent = i18n.t('posts.button')
+        li.append(button)
+
+        ul.append(li)
+    })
+}
+
+export default (state, elements, i18n) => onChange(state, (path, value) => {
+    //console.log(path, value)
+    switch (path) {
+        case 'form.error':
+            renderError(value, elements, i18n)
+            break
+        case 'feeds':
+            renderFeeds(state, elements, i18n)
+            break
+        case 'posts':
+            renderPosts(state, elements, i18n);
+            break
+    }
+})

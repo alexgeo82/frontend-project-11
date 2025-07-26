@@ -1,3 +1,4 @@
-import runApp from './view.js';
+import runApp from './init.js'
+import './styles.scss'
 
-runApp();
+runApp()

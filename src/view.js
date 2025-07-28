@@ -40,18 +40,18 @@ const renderFeeds = (state, elements, i18n) => {
     createUlElement(elements.feeds, 'feeds.title', i18n, 'feeds')
     const ul = document.getElementById('feeds')
 
-    state.feeds.forEach((feed) => {
+    state.feeds.forEach(({ feed }) => {
         const li = document.createElement('li')
         li.className = 'list-group-item border-0 border-end-0'
 
         const h3 = document.createElement('h3')
         h3.className = 'h6 m-0'
-        h3.textContent = feed.feed.title
+        h3.textContent = feed.title
         li.append(h3)
 
         const p = document.createElement('p')
         p.className = 'm-0 small text-black-50'
-        p.textContent = feed.feed.description
+        p.textContent = feed.description
         li.append(p)
         ul.append(li)
     })
@@ -67,23 +67,22 @@ const renderPosts = (state, elements, i18n) => {
         li.className = 'list-group-item d-flex justify-content-between align-items-start border-0 border-end-0'
 
         const a = document.createElement('a')
-        a.setAttribute('href', post.post.link)
+        a.setAttribute('href', post.link)
         a.className = 'fw-bold'
-        a.dataset.id = post.post.id
+        a.dataset.id = post.id
         a.setAttribute('target', '_blank')
         a.setAttribute('rel', 'noopener noreferrer')
-        a.textContent = post.post.title
+        a.textContent = post.title
         li.append(a)
 
         const button = document.createElement('button')
         button.setAttribute('type', 'button')
         button.className = 'btn btn-outline-primary btn-sm'
-        button.dataset.id = post.post.id
+        button.dataset.id = post.id
         button.dataset.bsToggle = 'modal'
         button.dataset.bsTarget = '#modal'
         button.textContent = i18n.t('posts.button')
         li.append(button)
-
         ul.append(li)
     })
 }

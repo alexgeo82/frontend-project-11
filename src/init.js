@@ -5,6 +5,7 @@ import ru from './locales/ru.js'
 import view from './view.js'
 import parse from './parser.js'
 import { uniqueId } from 'lodash';
+import updatePosts from './updateposts.js'
 
 export default () => {
     const initialState = {
@@ -53,7 +54,7 @@ export default () => {
                     const [feed, posts] = parse(response.data.contents)
                     const newFeed = { id: uniqueId(), feed, url }
                     watchedState.feeds.push(newFeed)
-                    const newPosts = posts.map((post) => ({ id: uniqueId(), feedId: newFeed.id, post }))
+                    const newPosts = posts.map((post) => ({ id: uniqueId(), feedId: newFeed.id, ...post }))
                     watchedState.posts.push(...newPosts)
                     watchedState.form.state = 'success'
                 })
@@ -65,4 +66,5 @@ export default () => {
             watchedState.form.state = 'filling'
         }
     })
+    setTimeout(() => updatePosts(watchedState), 1000)
 }

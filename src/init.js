@@ -34,6 +34,7 @@ export default () => {
         feedback: document.querySelector('.feedback'),
         feeds: document.querySelector('.feeds'),
         posts: document.querySelector('.posts'),
+        modal: document.getElementById('modal'),
     }
 
     const watchedState = view(initialState, elements, i18n);

@@ -75,6 +75,10 @@ const renderPosts = (state, elements, i18n) => {
         a.textContent = post.title
         li.append(a)
 
+        a.addEventListener('click', () => {
+            a.className = 'fw-normal'
+        })
+
         const button = document.createElement('button')
         button.setAttribute('type', 'button')
         button.className = 'btn btn-outline-primary btn-sm'
@@ -84,7 +88,19 @@ const renderPosts = (state, elements, i18n) => {
         button.textContent = i18n.t('posts.button')
         li.append(button)
         ul.append(li)
+
+        button.addEventListener('click', (e) => {
+            showModal(state, e.target, elements)
+        })
     })
+}
+
+const showModal = (state, target, elements) => {
+    const post = state.posts.find((post) => post.id === target.dataset.id)
+    console.log(post)
+    elements.modal.querySelector('h5').textContent = post.title
+    elements.modal.querySelector('.modal-body').textContent = post.description
+    elements.modal.querySelector('a').href = post.link
 }
 
 export default (state, elements, i18n) => onChange(state, (path, value) => {

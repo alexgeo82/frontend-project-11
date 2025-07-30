@@ -99,9 +99,6 @@ const showModal = (state, elements, value) => {
     elements.modal.setAttribute('style', 'display: block;')
     elements.modal.removeAttribute('aria-hidden')
     elements.modal.setAttribute('aria-modal', 'true')
-    /*const backdrop = document.createElement('div')
-    backdrop.className = 'modal-backdrop fade show'
-    body.appendChild(backdrop)*/
 }
 
 export default (state, elements, i18n) => onChange(state, (path, value) => {

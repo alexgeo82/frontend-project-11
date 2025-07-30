@@ -16,6 +16,8 @@ export default () => {
         },
         feeds: [],
         posts: [],
+        viewedPosts: new Set(),
+        modalId: null,
     }
 
     const i18n = i18next.createInstance();
@@ -67,5 +69,17 @@ export default () => {
             watchedState.form.state = 'filling'
         }
     })
-    setTimeout(() => updatePosts(watchedState), 1000)
+
+    elements.posts.addEventListener('click', (e) => {
+        const postId = e.target.dataset.id
+        if (e.target.localName === 'a') {
+            watchedState.viewedPosts.add(postId)
+        }
+        if (e.target.localName === 'button') {
+            watchedState.viewedPosts.add(postId)
+            watchedState.modalId = postId
+        }
+    })
+
+    setTimeout(() => updatePosts(watchedState), 5000)
 }

@@ -68,16 +68,12 @@ const renderPosts = (state, elements, i18n) => {
 
         const a = document.createElement('a')
         a.setAttribute('href', post.link)
-        a.className = 'fw-bold'
+        a.className = !state.viewedPosts.has(post.id) ? 'fw-bold' : 'fw-normal'
         a.dataset.id = post.id
         a.setAttribute('target', '_blank')
         a.setAttribute('rel', 'noopener noreferrer')
         a.textContent = post.title
         li.append(a)
-
-        a.addEventListener('click', () => {
-            a.className = 'fw-normal'
-        })
 
         const button = document.createElement('button')
         button.setAttribute('type', 'button')
@@ -88,23 +84,27 @@ const renderPosts = (state, elements, i18n) => {
         button.textContent = i18n.t('posts.button')
         li.append(button)
         ul.append(li)
-
-        button.addEventListener('click', (e) => {
-            showModal(state, e.target, elements)
-        })
     })
 }
 
-const showModal = (state, target, elements) => {
-    const post = state.posts.find((post) => post.id === target.dataset.id)
-    console.log(post)
+const showModal = (state, elements, value) => {
+    const post = state.posts.find((post) => post.id === value)
     elements.modal.querySelector('h5').textContent = post.title
     elements.modal.querySelector('.modal-body').textContent = post.description
     elements.modal.querySelector('a').href = post.link
+    const body = document.querySelector('body')
+    body.classList.add('modal-open')
+    body.setAttribute('style', 'overflow: hidden;')
+    elements.modal.classList.add('show')
+    elements.modal.setAttribute('style', 'display: block;')
+    elements.modal.removeAttribute('aria-hidden')
+    elements.modal.setAttribute('aria-modal', 'true')
+    /*const backdrop = document.createElement('div')
+    backdrop.className = 'modal-backdrop fade show'
+    body.appendChild(backdrop)*/
 }
 
 export default (state, elements, i18n) => onChange(state, (path, value) => {
-    //console.log(path, value)
     switch (path) {
         case 'form.error':
             renderError(value, elements, i18n)
@@ -113,7 +113,13 @@ export default (state, elements, i18n) => onChange(state, (path, value) => {
             renderFeeds(state, elements, i18n)
             break
         case 'posts':
-            renderPosts(state, elements, i18n);
+            renderPosts(state, elements, i18n)
+            break
+        case 'viewedPosts':
+            renderPosts(state, elements, i18n)
+            break
+        case 'modalId':
+            showModal(state, elements, value)
             break
     }
 })

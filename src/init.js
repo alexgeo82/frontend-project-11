@@ -58,6 +58,7 @@ export default () => {
                         watchedState.posts.push(...newPosts)
                         watchedState.form.state = 'success'
                     } catch (error) {
+                        console.error(error)
                         watchedState.form.error = 'form.errors.notValidRss'
                     }
                 })

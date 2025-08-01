@@ -50,18 +50,19 @@ export default () => {
             watchedState.form.state = 'processing'
             await axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
                 .then(response => {
-                    if (response.data.status.error) {
+                    try {
+                        const [feed, posts] = parse(response.data.contents)
+                        const newFeed = { id: uniqueId(), feed, url }
+                        watchedState.feeds.push(newFeed)
+                        const newPosts = posts.map((post) => ({ id: uniqueId(), feedId: newFeed.id, ...post }))
+                        watchedState.posts.push(...newPosts)
+                        watchedState.form.state = 'success'
+                    } catch (error) {
                         watchedState.form.error = 'form.errors.notValidRss'
-                        return
                     }
-                    const [feed, posts] = parse(response.data.contents)
-                    const newFeed = { id: uniqueId(), feed, url }
-                    watchedState.feeds.push(newFeed)
-                    const newPosts = posts.map((post) => ({ id: uniqueId(), feedId: newFeed.id, ...post }))
-                    watchedState.posts.push(...newPosts)
-                    watchedState.form.state = 'success'
                 })
                 .catch(error => {
+                    watchedState.form.error = 'form.errors.networkError'
                     console.error(error)
                 })
         } catch (error) {

@@ -92,13 +92,6 @@ const showModal = (state, elements, value) => {
     elements.modal.querySelector('h5').textContent = post.title
     elements.modal.querySelector('.modal-body').textContent = post.description
     elements.modal.querySelector('a').href = post.link
-    const body = document.querySelector('body')
-    body.classList.add('modal-open')
-    body.setAttribute('style', 'overflow: hidden;')
-    elements.modal.classList.add('show')
-    elements.modal.setAttribute('style', 'display: block;')
-    elements.modal.removeAttribute('aria-hidden')
-    elements.modal.setAttribute('aria-modal', 'true')
 }
 
 export default (state, elements, i18n) => onChange(state, (path, value) => {
